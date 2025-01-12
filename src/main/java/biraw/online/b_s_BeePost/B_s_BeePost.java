@@ -1,17 +1,61 @@
 package biraw.online.b_s_BeePost;
 
+import biraw.online.b_s_BeePost.Bee.BeeHolder;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Bee;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Debug;
+
+import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class B_s_BeePost extends JavaPlugin {
 
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
+    private static B_s_BeePost instance;
 
+    public static B_s_BeePost getInstance(){
+        return instance;
+    }
+    public static NamespacedKey namespacedKey(String s){
+        return new NamespacedKey(instance,s);
+    }
+
+    private final static Boolean DEBUG = true;
+    public static void Debug(String message){
+        if (DEBUG) instance.getLogger().warning("[DEBUG] "+message);
+    }
+
+
+    public static ArrayList<BeeHolder> ActiveBees;
+
+    public static BeeHolder getBeeHolderForEntity(Bee bee) {
+        for (BeeHolder beeHolder : ActiveBees) {
+            if (beeHolder.getEntity().getUniqueId().equals(bee.getUniqueId())) {
+                return beeHolder;
+            }
+        }
+        Debug("Bee doesn't have any holder associated with it.");
+        return null;
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public void onEnable() {
+        instance = this;
+        Bukkit.getPluginManager().registerEvents(new BeeInteractListener(),this);
+
+        LoadManager.StartLoader();
+
+        // Print the motd
+        this.getLogger().info(" ");
+        this.getLogger().info("O=========================================================O");
+        this.getLogger().info("      The B's BeePost plugin has loaded successfully!");
+        this.getLogger().info("         This is B's BeePost for Minecraft 1.20.5+");
+        this.getLogger().info("                       Author: BiRaw");
+        this.getLogger().info("         Discord: https://discord.gg/XwFqu7uahX :>");
+        this.getLogger().info("O=========================================================O");
+        this.getLogger().info(" ");
     }
 }
