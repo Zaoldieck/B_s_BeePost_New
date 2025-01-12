@@ -1,6 +1,7 @@
 package biraw.online.b_s_BeePost.Bee;
 
 import biraw.online.b_s_BeePost.B_s_BeePost;
+import biraw.online.b_s_BeePost.LanguageManager;
 import biraw.online.b_s_BeePost.Utilities;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
@@ -14,7 +15,7 @@ import java.util.Random;
 
 public class BeeAI {
 
-    public void BeeWaitingForPresent(BeeHolder beeHolder)
+    public static void BeeWaitingForPresent(BeeHolder beeHolder)
     {
         Bee bee = beeHolder.getEntity();
         OfflinePlayer offlineSender = beeHolder.getSender();
@@ -49,7 +50,7 @@ public class BeeAI {
                 bee.setFlower(null);
 
                 // Make the bee move to the player
-                if(bee.getLocation().distance(sender.getLocation()) > 4) bee.getPathfinder().moveTo(sender);
+                if(bee.getWorld() == sender.getWorld() && bee.getLocation().distance(sender.getLocation()) > 4) bee.getPathfinder().moveTo(sender);
 
                 // Spawn state indicator particles
                 if (beeHolder.getReceiver().isOnline())    Utilities.spawnParticleForBee(bee.getLocation(), Color.GREEN);
@@ -58,7 +59,7 @@ public class BeeAI {
         }.runTaskTimer(B_s_BeePost.getInstance(), 0L, 10L);
     }
 
-    public void BeeAscending(BeeHolder beeHolder){
+    public static void BeeAscending(BeeHolder beeHolder){
         Bee bee = beeHolder.getEntity();
         OfflinePlayer offlineSender = beeHolder.getSender();
 
@@ -71,27 +72,28 @@ public class BeeAI {
             @Override
             public void run() {
 
+                // If bee dies, still deliver the message (normally players cant kill it in survival)
+                if (bee.isDead())
+                {
+                    this.cancel();
+                    beeHolder.BeeGoesOut();
+                }
+
                 // If the player logs off or state is not ascending, go to next phase
                 if (!offlineSender.isOnline() || beeHolder.state != BeeState.ASCENDING)
                 {
                     this.cancel();
-                    try {
-                        beeHolder.Save();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    beeHolder.BeeGoesOut();
                 }
 
                 Player sender = (Player) offlineSender; // Just mold the receiver to a Player for easier usage
 
                 // Save bee if the conditions are right
-                if (bee.getLocation().distance(sender.getLocation())>=32)
+                if (bee.getWorld() == sender.getWorld() && bee.getLocation().distance(sender.getLocation())>=32)
                 {
-                    sender.sendMessage("§6Message was sent to: §a"+ beeHolder.getReceiver().getName());
+                    sender.sendMessage(LanguageManager.getMessageSent() + beeHolder.getReceiver().getName());
                     this.cancel();
-                    try {
-                        beeHolder.Save();
-                    } catch (IOException e) {throw new RuntimeException(e);}
+                    beeHolder.BeeGoesOut();
                 }
 
                 bee.setAnger(0);
@@ -106,38 +108,38 @@ public class BeeAI {
         }.runTaskTimer(B_s_BeePost.getInstance(), 0L, 10L);
     }
 
-    public void BeeDeliver(BeeHolder beeHolder){
+    public static void BeeDeliver(BeeHolder beeHolder){
         Bee bee = beeHolder.getEntity();
         OfflinePlayer offlineReceiver = beeHolder.getReceiver();
 
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (bee.isDead())
+                {
+                    this.cancel();
+                    beeHolder.state = BeeState.FINISHED;
+                    bee.getWorld().dropItem(bee.getLocation(),beeHolder.getMessage());
+                    bee.getWorld().dropItem(bee.getLocation(),beeHolder.getPresent());
+                    B_s_BeePost.ActiveBees.remove(this);
+                }
                 // If the bee got the present delivered, it gets back to being a mindless little honey farmer :)
                 if (beeHolder.state != BeeState.DELIVERY) this.cancel();
                 // If the receiver logs off, the bee gets saved
                 if (!offlineReceiver.isOnline())
                 {
-                    try {
-                        beeHolder.Save();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    beeHolder.BeeGoesOut();
                     this.cancel();
                 }
 
                 Player receiver = (Player) offlineReceiver; // Just mold the receiver to a Player for easier usage
 
                 // If the bee gets too far from the owner, it disappears
-                if (bee.getLocation().distance(receiver.getLocation())>=80)
+                if (bee.getWorld() == receiver.getWorld() && bee.getLocation().distance(receiver.getLocation())>=80)
                 {
-                    receiver.sendMessage("§4You went too far, and the post be disappeared...");
+                    receiver.sendMessage(LanguageManager.getPostBeeDisappeared());
                     this.cancel();
-                    try {
-                        beeHolder.Save();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    beeHolder.BeeGoesOut();
                 }
 
                 bee.setAnger(0);
@@ -145,7 +147,7 @@ public class BeeAI {
                 bee.setFlower(null);
 
                 // Get to the receiver constantly
-                if(bee.getLocation().distance(receiver.getLocation()) > 4) bee.getPathfinder().moveTo(receiver);
+                if(bee.getWorld() == receiver.getWorld() && bee.getLocation().distance(receiver.getLocation()) > 4) bee.getPathfinder().moveTo(receiver);
 
                 // Spawn state indicator particles
                 Utilities.spawnParticleForBee(bee.getLocation(), Color.ORANGE);

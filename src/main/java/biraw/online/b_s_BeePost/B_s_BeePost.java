@@ -1,16 +1,15 @@
 package biraw.online.b_s_BeePost;
 
 import biraw.online.b_s_BeePost.Bee.BeeHolder;
+import biraw.online.b_s_BeePost.Bee.BeeState;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Bee;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Debug;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.lang.reflect.Array;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public final class B_s_BeePost extends JavaPlugin {
 
@@ -23,16 +22,17 @@ public final class B_s_BeePost extends JavaPlugin {
         return new NamespacedKey(instance,s);
     }
 
-    private final static Boolean DEBUG = true;
+    private final static Boolean DEBUG = false;
+
     public static void Debug(String message){
         if (DEBUG) instance.getLogger().warning("[DEBUG] "+message);
     }
 
-
-    public static ArrayList<BeeHolder> ActiveBees;
+    public static ArrayList<BeeHolder> ActiveBees = new ArrayList<>();
 
     public static BeeHolder getBeeHolderForEntity(Bee bee) {
         for (BeeHolder beeHolder : ActiveBees) {
+            if (beeHolder.getEntity() == null) continue;
             if (beeHolder.getEntity().getUniqueId().equals(bee.getUniqueId())) {
                 return beeHolder;
             }
@@ -45,8 +45,15 @@ public final class B_s_BeePost extends JavaPlugin {
     public void onEnable() {
         instance = this;
         Bukkit.getPluginManager().registerEvents(new BeeInteractListener(),this);
+        new LanguageManager();
 
         LoadManager.StartLoader();
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                LoadManager.spawnBees();
+            }
+        }.runTaskTimer(instance, 400,100);
 
         // Print the motd
         this.getLogger().info(" ");
@@ -57,5 +64,19 @@ public final class B_s_BeePost extends JavaPlugin {
         this.getLogger().info("         Discord: https://discord.gg/XwFqu7uahX :>");
         this.getLogger().info("O=========================================================O");
         this.getLogger().info(" ");
+    }
+
+    @Override
+    public void onDisable() {
+        this.getLogger().info("The B's BeePost plugin has been disabled!");
+        for (BeeHolder beeHolder : new ArrayList<>(B_s_BeePost.ActiveBees))
+        {
+            if (    beeHolder.state != BeeState.ASCENDED &&
+                    beeHolder.state != BeeState.ASCENDING &&
+                    beeHolder.state != BeeState.DELIVERY ) continue;
+            try {
+                beeHolder.Save();
+            } catch (IOException ignored){}
+        }
     }
 }
