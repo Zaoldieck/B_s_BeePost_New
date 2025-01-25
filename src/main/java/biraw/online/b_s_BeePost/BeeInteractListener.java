@@ -3,6 +3,7 @@ package biraw.online.b_s_BeePost;
 import biraw.online.b_s_BeePost.Bee.BeeAI;
 import biraw.online.b_s_BeePost.Bee.BeeHolder;
 import biraw.online.b_s_BeePost.Bee.BeeState;
+import dev.iseal.sealLib.Systems.I18N.I18N;
 import org.bukkit.*;
 import org.bukkit.entity.Bee;
 import org.bukkit.entity.EntityType;
@@ -47,7 +48,7 @@ public class BeeInteractListener implements Listener {
             if (receiver == null || !receiver.hasPlayedBefore())
             {
                 Utilities.swapHands(sender); // Cancel the book opening
-                sender.sendMessage(LanguageManager.getInvalidUsername());
+                sender.sendMessage(I18N.translate("INVALID_USERNAME"));
                 return;
             }
 
@@ -55,7 +56,7 @@ public class BeeInteractListener implements Listener {
             if (sender.getLocation().getWorld().getEnvironment() != World.Environment.NORMAL)
             {
                 Utilities.swapHands(sender);
-                sender.sendMessage(LanguageManager.getOnlyOverworld());
+                sender.sendMessage(I18N.translate("ONLY_OVERWORLD"));
                 return;
             }
 

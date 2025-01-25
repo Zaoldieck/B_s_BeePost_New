@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.iseal.sealLib.Systems.I18N.I18N;
 import org.bukkit.*;
 import org.bukkit.entity.Bee;
 import org.bukkit.entity.EntityType;
@@ -64,7 +65,7 @@ public class LoadManager {
                 beeHolder.setEntity((Bee) receiver.getWorld().spawnEntity(beeSpawnpoint, EntityType.BEE));
                 beeHolder.state = BeeState.DELIVERY;
                 BeeAI.BeeDeliver(beeHolder);
-                receiver.sendMessage(LanguageManager.getPostBeeApproaching());
+                receiver.sendMessage(I18N.translate("POST_BEE_APPROACHING"));
             }
             if (beeHolder.state == BeeState.FINISHED) B_s_BeePost.ActiveBees.remove(beeHolder);
         }

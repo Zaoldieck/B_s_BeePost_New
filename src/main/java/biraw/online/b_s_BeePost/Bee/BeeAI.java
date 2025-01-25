@@ -1,8 +1,8 @@
 package biraw.online.b_s_BeePost.Bee;
 
 import biraw.online.b_s_BeePost.B_s_BeePost;
-import biraw.online.b_s_BeePost.LanguageManager;
 import biraw.online.b_s_BeePost.Utilities;
+import dev.iseal.sealLib.Systems.I18N.I18N;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Bee;
@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class BeeAI {
@@ -91,7 +90,8 @@ public class BeeAI {
                 // Save bee if the conditions are right
                 if (bee.getWorld() == sender.getWorld() && bee.getLocation().distance(sender.getLocation())>=32)
                 {
-                    sender.sendMessage(LanguageManager.getMessageSent() + beeHolder.getReceiver().getName());
+                    if (beeHolder.getReceiver().getName() != null)
+                        sender.sendMessage(I18N.translate("MESSAGE_SENT").replace("{receiver}", beeHolder.getReceiver().getName()));
                     this.cancel();
                     beeHolder.BeeGoesOut();
                 }
@@ -137,7 +137,7 @@ public class BeeAI {
                 // If the bee gets too far from the owner, it disappears
                 if (bee.getWorld() == receiver.getWorld() && bee.getLocation().distance(receiver.getLocation())>=80)
                 {
-                    receiver.sendMessage(LanguageManager.getPostBeeDisappeared());
+                    receiver.sendMessage(I18N.translate("POST_BEE_DISAPPEARED"));
                     this.cancel();
                     beeHolder.BeeGoesOut();
                 }

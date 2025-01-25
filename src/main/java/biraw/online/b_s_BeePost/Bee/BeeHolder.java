@@ -1,8 +1,8 @@
 package biraw.online.b_s_BeePost.Bee;
 
 import biraw.online.b_s_BeePost.B_s_BeePost;
-import biraw.online.b_s_BeePost.LanguageManager;
 import biraw.online.b_s_BeePost.Utilities;
+import dev.iseal.sealLib.Systems.I18N.I18N;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -52,7 +52,7 @@ public class BeeHolder {
     public BeeHolder(File file){
         if (!file.exists())
         {
-            B_s_BeePost.Debug("Trying to load bee, that doesn't exist.");
+            B_s_BeePost.debug("Trying to load bee, that doesn't exist.");
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -70,7 +70,7 @@ public class BeeHolder {
             receiver = receiverUUID;
 
         } catch (Exception e) {
-            B_s_BeePost.Debug("Error loading data from file: " + e);
+            B_s_BeePost.debug("Error loading data from file: " + e);
         }
 
         state = BeeState.ASCENDED;
@@ -84,7 +84,7 @@ public class BeeHolder {
         String directoryPath = "plugins/BeePost messages/";
         File directory = new File(directoryPath);
         if (!directory.exists() || !directory.isDirectory()) {
-            B_s_BeePost.Debug("Directory does not exist: " + directoryPath);
+            B_s_BeePost.debug("Directory does not exist: " + directoryPath);
             return;
         }
 
@@ -108,7 +108,7 @@ public class BeeHolder {
         try {
             config.save(saveFile);
         } catch (IOException e) {
-            B_s_BeePost.Debug("File saving error: " + e);
+            B_s_BeePost.debug("File saving error: " + e);
         }
 
         // Remove the bee
@@ -127,9 +127,9 @@ public class BeeHolder {
     public void Deliver(Player opener){
         if (!Objects.equals(opener.getUniqueId(), receiver))
         {
-            B_s_BeePost.Debug(opener.getUniqueId().toString());
-            B_s_BeePost.Debug(receiver.toString());
-            opener.sendMessage(LanguageManager.getNotForYou());
+            B_s_BeePost.debug(opener.getUniqueId().toString());
+            B_s_BeePost.debug(receiver.toString());
+            opener.sendMessage(I18N.translate("NOT_FOR_YOU"));
             return;
         }
 
