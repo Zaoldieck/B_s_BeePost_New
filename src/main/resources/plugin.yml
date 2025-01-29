@@ -2,5 +2,9 @@ name: B_s_BeePost
 version: '1.0'
 main: biraw.online.b_s_BeePost.B_s_BeePost
 api-version: '1.20'
-authors: [BiRaw, ISeal]
+author: BiRaw
 depend: [SealLib]
+permissions:
+  b_s_bee_post.notify:
+    description: Notify when a new update is released
+    default: op

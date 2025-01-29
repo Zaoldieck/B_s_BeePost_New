@@ -5,6 +5,7 @@ import biraw.online.b_s_BeePost.Bee.BeeState;
 import de.leonhard.storage.Config;
 import dev.iseal.sealLib.SealLib;
 import dev.iseal.sealLib.Systems.I18N.I18N;
+import dev.iseal.sealLib.Updater.UpdateChecker;
 import dev.iseal.sealLib.Utils.ExceptionHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -67,6 +68,17 @@ public final class B_s_BeePost extends JavaPlugin {
                 LoadManager.spawnBees();
             }
         }.runTaskTimer(instance, 400,100);
+
+        new UpdateChecker(
+                "oETATTQ1",
+                this,
+                "b_s_bee_post.notify",
+                3600*20,
+                (e) -> ExceptionHandler.getInstance().dealWithException(e, Level.WARNING, "UPDATE_CHECK_FAILED"),
+                (newVersion, sender) -> Bukkit.getOnlinePlayers().stream()
+                        .filter(player -> player.hasPermission("b_s_bee_post.notify"))
+                        .forEach(player -> player.sendMessage(I18N.translate("UPDATE_AVAILABLE").replace("{version}",newVersion)))
+        );
 
         // Print the motd
         this.getLogger().info(" ");
