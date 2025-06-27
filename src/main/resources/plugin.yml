@@ -1,8 +1,8 @@
 name: B_s_BeePost
-version: '1.0'
+version: '2.0'
 main: biraw.online.b_s_BeePost.B_s_BeePost
+author: [BiRaw]
 api-version: '1.20'
-author: BiRaw
 depend: [SealLib]
 permissions:
   b_s_bee_post.notify:
