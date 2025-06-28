@@ -6,7 +6,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import java.util.Random;
 
-
 public class Utilities {
 
     public static void spawnBeeDisappearParticles(Location center){
@@ -26,18 +25,18 @@ public class Utilities {
 
             // Get the final position
             Location particleLocation = center.clone().add(particleOffset);
-
-            // Spawn the particle
-            center.getWorld().spawnParticle(Particle.WHITE_SMOKE, particleLocation, 1, 0, 0, 0, 0.1);
+            // ZAO EDIT - Spawn the particle (compatibile con 1.20.1)
+            center.getWorld().spawnParticle(Particle.SMOKE_NORMAL, particleLocation, 1, 0, 0, 0, 0.1);
         }
     }
 
-    public static void spawnParticleForBee(Location location,Color color){
+    public static void spawnParticleForBee(Location location, Color color){
+        // ZAO EDIT - REDSTONE its the correct name for the dust particles in 1.20.1
         Particle.DustOptions option = new Particle.DustOptions(color, 2f);
-        location.getWorld().spawnParticle(Particle.DUST, location.add(0.0,1.0,0.0), 5, option);
+        location.getWorld().spawnParticle(Particle.REDSTONE, location.add(0.0, 1.0, 0.0), 5, option);
     }
 
-    public static void swapHands(Player player) { // This is to prevent the player from opening the book, if they have multiple in hand
+    public static void swapHands(Player player) {
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
         ItemStack offHandItem = player.getInventory().getItemInOffHand();
 

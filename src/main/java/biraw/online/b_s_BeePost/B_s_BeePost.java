@@ -84,8 +84,9 @@ public final class B_s_BeePost extends JavaPlugin {
         this.getLogger().info(" ");
         this.getLogger().info("O=========================================================O");
         this.getLogger().info("      The B's BeePost plugin has loaded successfully!");
-        this.getLogger().info("         This is B's BeePost for Minecraft 1.20.5+");
+        this.getLogger().info("         This is B's BeePost for Minecraft 1.20.1");
         this.getLogger().info("                       Author: BiRaw");
+        this.getLogger().info("                         Edit: Zao");
         this.getLogger().info("         Discord: https://discord.gg/XwFqu7uahX :>");
         this.getLogger().info("O=========================================================O");
         this.getLogger().info(" ");

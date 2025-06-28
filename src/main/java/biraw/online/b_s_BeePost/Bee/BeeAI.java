@@ -135,7 +135,7 @@ public class BeeAI {
                 Player receiver = (Player) offlineReceiver; // Just mold the receiver to a Player for easier usage
 
                 // If the bee gets too far from the owner, it disappears
-                if (bee.getWorld() == receiver.getWorld() && bee.getLocation().distance(receiver.getLocation())>=80)
+                if (bee.getWorld() == receiver.getWorld() && bee.getLocation().distance(receiver.getLocation())>=200)
                 {
                     receiver.sendMessage(I18N.translate("POST_BEE_DISAPPEARED"));
                     this.cancel();

@@ -50,24 +50,41 @@ public class LoadManager {
     public static void spawnBees() {
         if (B_s_BeePost.ActiveBees == null || B_s_BeePost.ActiveBees.isEmpty()) return;
 
-        for (BeeHolder beeHolder : new ArrayList<>(B_s_BeePost.ActiveBees))
-        {
-            if (beeHolder.state == BeeState.ASCENDED && beeHolder.getReceiver().isOnline())
-            {
+        for (BeeHolder beeHolder : new ArrayList<>(B_s_BeePost.ActiveBees)) {
+            if (beeHolder.state == BeeState.ASCENDED && beeHolder.getReceiver().isOnline()) {
 
                 Player receiver = (Player) beeHolder.getReceiver();
-                // DON'T LOOK AT THIS
-                Location beeSpawnpoint = receiver.getWorld().getHighestBlockAt(receiver.getLocation()
-                                .add(   new Random().nextInt(51) - 25,
-                                        0,
-                                        new Random().nextInt(51) - 25))
-                        .getLocation().add(0,20f,0);
+
+                // calculation of a safe Spawn position near the player
+                Location baseLoc = receiver.getLocation().clone();
+                Random random = new Random();
+
+                Location beeSpawnpoint = null;
+
+                for (int tries = 0; tries < 10; tries++) {
+                    int dx = random.nextInt(11) - 5; // da -5 a +5
+                    int dz = random.nextInt(11) - 5;
+                    Location checkLoc = baseLoc.clone().add(dx, 0, dz);
+                    Location highest = receiver.getWorld().getHighestBlockAt(checkLoc).getLocation();
+
+                    // Check if it is a solid block (not air or liquid)
+                    if (highest.getBlock().getType().isSolid()) {
+                        beeSpawnpoint = highest.add(0.5, 4.0, 0.5); // 4 blocks above the ground
+                        break;
+                    }
+                }
+                if (beeSpawnpoint == null) {
+                    receiver.sendMessage(ChatColor.RED + "No valid position found to make the bee appear!");
+                    continue;
+                }
+                // Spawn the bee
                 beeHolder.setEntity((Bee) receiver.getWorld().spawnEntity(beeSpawnpoint, EntityType.BEE));
                 beeHolder.state = BeeState.DELIVERY;
                 BeeAI.BeeDeliver(beeHolder);
                 receiver.sendMessage(I18N.translate("POST_BEE_APPROACHING"));
             }
-            if (beeHolder.state == BeeState.FINISHED) B_s_BeePost.ActiveBees.remove(beeHolder);
+            if (beeHolder.state == BeeState.FINISHED)
+                B_s_BeePost.ActiveBees.remove(beeHolder);
         }
     }
 }
